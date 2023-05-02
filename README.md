@@ -167,3 +167,117 @@ Step 5.1.3: Do the same for falseButton. But change it to R.string.incorrect
 
 Step 6: Run the app and click on buttons to see your work
 
+
+
+
+
+
+
+
+
+
+Lab MVC
+Objectives:
+·        Familiar with MVC
+·        Implement MVC on Android platform
+·        Implement navigation
+
+Steps:
+
+1.      Continue CapitalQuiz project
+(Or import file through File -> New -> Import New Project if you have made another copy)
+1.1.    Incorporate string, question, defined in strings.xml into the textView (if you have not done that)
+1.2.    Execute the app to verify the question is shown in the app
+2.      Update strings.xml as follows:
+2.1.   Change name=”question” to name=”ques_il”
+2.2.   Add the following 5 entries:
+<string name="ques_ny">New York City is the capital of New York</string>
+<string name="ques_ca">San Francisco is the capital of California</string>
+<string name="ques_tx">Houston is the capital of Texas</string>
+<string name="ques_wa">Olympia is the capital of Washington State</string>
+<string name="next_button">Next</string>
+3.      Redesign the GUI by adding a third row to the root (i.e., LinearLayout) for a button, Next.
+3.1.   Remove android: text = “Springfield …..” from TextView (what is done at step 1.1 above)
+3.2.    Add the following to TextView
+tools:text=”@string/ques_il”                         
+Make sure you utilize auto completion
+tools:text is for preview not for runtime
+3.3.     Add a button as the third child of the root LinearLayout and set its text to be @string/next_button
+You can achieve this in the Design mode. Watch out the id for the newly created button.
+Of course, if you change the ids then you need to make sure you use them in the corresponding java code accordingly. For the time being I don’t recommend you change them.  Also notice how the layout is changed.
+4.      Change the controller part
+4.1.    Right click application and select New -> Java Class
+4.2.     In Create New Class dialog set up the Name attribute as follows:
+Name: Question
+Click OK button
+4.3.    Create instance variables and constructor in this newly created class, Question, as follows:
+int textResId;
+boolean answer;
+public Question(int textResId, boolean answer){
+this.textResId = textResId;
+this.answer = answer;
+}
+We will switch to MainActivity.java
+4.4.    Declare variables in MainActivity .java as follows:
+private Button nextButton;
+private TextView questionText;
+int questionResId;
+private Question[] questions = {
+new Question(R.string.ques_il, true),
+new Question(R.string.ques_ca, false),
+new Question(R.string.ques_ny, false),
+new Question(R.string.ques_tx, false),
+new Question(R.string.ques_wa, true)
+};
+private int currentIndex = 0;
+4.5.    Append the following code in onCreate()
+nextButton = findViewById(R.id.button3);
+questionText = findViewById(R.id.textView);
+questionResId = questions[currentIndex].textResId;
+questionText.setText(questionResId);
+4.6.    Test your app
+5.      In MainActivity.java
+5.1.    Define event handler for the Next Button (i.e., wire up the “next” button) as follows:
+nextButton.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View view) {
+currentIndex = (currentIndex + 1) % questions.length;
+questionResId = questions[currentIndex].textResId;
+questionText.setText(questionResId);
+}
+});
+5.2.    Test the next button by executing the app
+5.3.    Let’s factor out the following two lines of code from the onClick method:
+questionResId = questions[currentIndex].textResId;       
+questionText.setText(questionResId);
+to a method, updateQuestion() (i.e., create this method in Class MainActivity.java) as follows:
+private void updateQuestion(){
+questionResId = questions[currentIndex].textResId;
+questionText.setText(questionResId);
+}
+Since you factor out those two lines of code your onClick method should look like the way as follows:
+nextButton.setOnClickListener(new View.OnClickListener() {
+@Override
+public void onClick(View view) {
+currentIndex = (currentIndex + 1) % questions.length;
+updateQuestion();
+}
+});
+5.4.    Test your app
+6.      Modify the MainActivity.java to check if user submits the right answer
+6.1.     Define another method checkAnswer() as follows:
+private void checkAnswer(boolean userAnswer){
+boolean correctAnswer = questions[currentIndex].answer;
+int messageResId = userAnswer == correctAnswer ? R.string.correct : R.string.incorrect;
+Toast.makeText(getApplicationContext(), messageResId, Toast.LENGTH_SHORT).show();
+}
+6.2.    Change the event handle for true button to be checkAnswer(true);
+6.3.    Change the event handler for false button to be checkAnswer(false);
+6.4.    Run the app to verify your app
+7.      Submission
+Submit java file with its interface file (xml) along with two screenshots (one reflecting a correct answer and the other reflecting the incorrect answer)
+8.      Challenge for your own skill development (No submission is requred for this portion)
+8.1.   Put “Previous” next to “Next” in the interface (i.e., layout) and modify your java code to make “Previous” work as opposite to “Next” button by going to previous question (instead of the next question)
+8.2.   Use ImageButton instead of Button
+8.3.   Change the layout to ConstraintLayout
+
